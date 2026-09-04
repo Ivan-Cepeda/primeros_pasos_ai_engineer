@@ -1,0 +1,9 @@
+# Cliente unico para ambos proveedores: el SDK de OpenAI habla tambien con
+# Gemini gracias a su endpoint compatible con OpenAI (ver common/llm.py).
+openai>=1.60.0
+
+# Carga de variables de entorno desde el archivo .env
+python-dotenv>=1.0.1
+
+# Conteo aproximado/exacto de tokens (usado en L3)
+tiktoken>=0.7.0
