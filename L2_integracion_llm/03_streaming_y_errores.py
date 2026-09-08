@@ -37,7 +37,7 @@ def probar_sin_streaming(cliente):
 
     momento_inicial = time.time()
 
-    texto = preguntar(cliente, PREGUNTA, temperatura=0.3, max_tokens=300)
+    texto = preguntar(cliente, PREGUNTA, temperatura=0.3, max_tokens=800)
 
     print(texto)
 
@@ -53,7 +53,7 @@ def probar_con_streaming(cliente):
 
     mensajes = [{"role": "user", "content": PREGUNTA}]
 
-    for pedacito in conversar_en_streaming(cliente, mensajes, temperatura=0.3, max_tokens=300):
+    for pedacito in conversar_en_streaming(cliente, mensajes, temperatura=0.3, max_tokens=800):
 
         # Anotamos cuando llego el primer pedacito: ese es el momento en que el
         # usuario deja de ver la pantalla vacia.
@@ -87,7 +87,7 @@ def preguntar_con_reintentos(cliente, pregunta, cantidad_de_intentos=3):
     while numero_de_intento <= cantidad_de_intentos:
 
         try:
-            return preguntar(cliente, pregunta, temperatura=0.2, max_tokens=120)
+            return preguntar(cliente, pregunta, temperatura=0.2, max_tokens=500)
 
         except RateLimitError:
             # 429 = hiciste demasiados pedidos muy rapido. Hay que esperar.

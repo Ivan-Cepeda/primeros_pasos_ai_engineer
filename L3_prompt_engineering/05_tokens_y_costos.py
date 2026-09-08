@@ -15,6 +15,11 @@ TRES FORMAS DE CONTARLOS
   2. La libreria tiktoken            -> exacta y gratis, solo para OpenAI.
   3. Una cuenta aproximada           -> sirve para cualquier proveedor.
 
+OJO CON LOS MODELOS DE RAZONAMIENTO (2026)
+  Si al correr esto ves que la suma no cierra (entrada + salida es MENOR que el
+  total), no es un error: la diferencia son los tokens que el modelo gasto
+  pensando por dentro, sin mostrartelos. Se pagan igual. Mira el punto 2.
+
 COMO CORRERLO
     python 05_tokens_y_costos.py --provider gemini
 """
@@ -32,9 +37,11 @@ from common.ui import mostrar_configuracion, subtitulo, titulo
 # ---------------------------------------------------------------------------
 # Precios de referencia, en dolares por MILLON de tokens.
 #
-# IMPORTANTE: estos precios cambian seguido. Antes de usarlos para presupuestar
-# algo de verdad, revisalos en la pagina del proveedor. Si tu modelo no esta en
-# esta lista, el programa te lo va a avisar y podes agregarlo.
+# IMPORTANTE: estos precios cambian seguido y los modelos se dan de baja.
+# Antes de usarlos para presupuestar algo de verdad, revisalos en la pagina del
+# proveedor. Si tu modelo no esta en esta lista, el programa te lo avisa y podes
+# agregarlo vos. La tabla sirve igual para ver la RELACION entre el precio de
+# entrada y el de salida, que es lo que enseña este ejercicio.
 # ---------------------------------------------------------------------------
 PRECIOS = {
     "gpt-4o-mini":      {"entrada": 0.15, "salida": 0.60},
@@ -167,7 +174,7 @@ def main():
             {"role": "user", "content": "Explica en tres oraciones que es la ventana de contexto."},
         ],
         temperatura=0.3,
-        max_tokens=200,
+        max_tokens=600,
     )
 
     print()
@@ -234,7 +241,7 @@ def main():
     for pregunta in preguntas:
         historial.append({"role": "user", "content": pregunta})
 
-        respuesta = conversar(cliente, historial, temperatura=0.3, max_tokens=100)
+        respuesta = conversar(cliente, historial, temperatura=0.3, max_tokens=500)
         historial.append({"role": "assistant", "content": obtener_texto(respuesta)})
 
         entrada_acumulada = entrada_acumulada + respuesta.usage.prompt_tokens

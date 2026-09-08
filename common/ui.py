@@ -26,15 +26,31 @@ def mostrar_uso(respuesta):
     """
     Muestra cuantos tokens consumio una respuesta.
 
-    Los tokens son la unidad con la que se cobra. Se dividen en dos:
+    Los tokens son la unidad con la que se cobra. Se dividen en tres:
       prompt_tokens     -> lo que le mandaste (la entrada)
-      completion_tokens -> lo que el modelo escribio (la salida)
+      completion_tokens -> lo que el modelo escribio y vos leiste (la salida)
+      razonamiento      -> lo que el modelo penso por dentro y NO te mostro
+
+    Los de razonamiento no vienen en un campo propio: se deducen restando.
+    Si esta linea muestra un numero grande ahi, estas usando un modelo de
+    razonamiento y tenes que darle mas espacio en max_tokens.
     """
     uso = respuesta.usage
 
-    print("[tokens] entrada: " + str(uso.prompt_tokens) +
-          " | salida: " + str(uso.completion_tokens) +
-          " | total: " + str(uso.total_tokens))
+    ocultos = uso.total_tokens - uso.prompt_tokens - uso.completion_tokens
+
+    if ocultos < 0:
+        ocultos = 0
+
+    linea = ("[tokens] entrada: " + str(uso.prompt_tokens) +
+             " | salida visible: " + str(uso.completion_tokens))
+
+    if ocultos > 0:
+        linea = linea + " | razonamiento oculto: " + str(ocultos)
+
+    linea = linea + " | total: " + str(uso.total_tokens)
+
+    print(linea)
 
 
 def mostrar_configuracion(cliente):

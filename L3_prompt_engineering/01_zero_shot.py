@@ -119,7 +119,7 @@ def main():
         # .format() reemplaza {resena} dentro del texto por el valor real.
         prompt = PROMPT_VAGO.format(resena=resena)
 
-        print(preguntar(cliente, prompt, temperatura=0, max_tokens=150))
+        print(preguntar(cliente, prompt, temperatura=0, max_tokens=1000))
 
     # -----------------------------------------------------------------------
     titulo("B) PROMPT ESPECIFICO: una respuesta que el programa puede usar")
@@ -128,7 +128,7 @@ def main():
         subtitulo(resena)
 
         prompt = PROMPT_ESPECIFICO.format(resena=resena)
-        respuesta = preguntar(cliente, prompt, temperatura=0, max_tokens=60)
+        respuesta = preguntar(cliente, prompt, temperatura=0, max_tokens=1000)
 
         print(respuesta)
         print()
@@ -145,7 +145,7 @@ def main():
 
     for intento in range(3):
         prompt = PROMPT_ESPECIFICO.format(resena=resena)
-        respuesta = preguntar(cliente, prompt, temperatura=0, max_tokens=60)
+        respuesta = preguntar(cliente, prompt, temperatura=0, max_tokens=1000)
 
         # Solo la guardamos si no la habiamos visto antes.
         if respuesta not in respuestas_obtenidas:

@@ -114,7 +114,7 @@ def main():
         # Agregamos la pregunta del usuario al historial.
         historial.append({"role": "user", "content": pregunta})
 
-        respuesta = conversar(cliente, historial, temperatura=0.2, max_tokens=200)
+        respuesta = conversar(cliente, historial, temperatura=0.2, max_tokens=500)
         contenido = obtener_texto(respuesta)
 
         # Agregamos tambien la respuesta del modelo.

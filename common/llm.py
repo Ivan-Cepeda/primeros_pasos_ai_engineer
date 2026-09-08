@@ -118,9 +118,48 @@ def obtener_texto(respuesta):
     # A veces el modelo no devuelve texto (por ejemplo cuando pide usar una
     # herramienta). En ese caso content vale None y lo convertimos a "".
     if texto is None:
-        return ""
+        texto = ""
+
+    # AVISO IMPORTANTE para los modelos de razonamiento (ver mas abajo).
+    # Si la respuesta vino vacia PORQUE se acabo el limite de tokens, avisamos.
+    # Sin este aviso, el ejercicio imprime una linea en blanco y parece que el
+    # modelo "no contesto nada", cuando en realidad si trabajo: gasto todo el
+    # presupuesto de tokens razonando por dentro y no le quedo lugar para
+    # escribir la respuesta.
+    if texto == "" and respuesta.choices[0].finish_reason == "length":
+        print("  [AVISO] respuesta vacia: se acabo el max_tokens.")
+        print("          Si usas un modelo de razonamiento, subi max_tokens.")
 
     return texto.strip()
+
+
+def tokens_de_razonamiento(respuesta):
+    """
+    Calcula los tokens que el modelo gasto PENSANDO, sin mostrartelos.
+
+    LOS MODELOS DE RAZONAMIENTO (lo nuevo de 2026)
+    ----------------------------------------------
+    Los modelos modernos (Gemini 3.x, GPT-6, Claude Opus 5) no contestan de
+    inmediato: primero "piensan" por dentro, escribiendo un borrador que vos
+    nunca ves. Ese borrador consume tokens y se paga.
+
+    Por eso las cuentas del campo `usage` no cierran:
+
+        tokens de entrada  +  tokens visibles  <  total
+
+    La diferencia son los tokens de razonamiento. Y lo mas importante para
+    programar: max_tokens limita TODO junto, pensamiento incluido. Si le pones
+    un limite chico, el modelo lo gasta pensando y te devuelve texto vacio.
+    """
+    uso = respuesta.usage
+
+    ocultos = uso.total_tokens - uso.prompt_tokens - uso.completion_tokens
+
+    # Con un modelo que no razona, esta cuenta da 0 (o algo muy chico).
+    if ocultos < 0:
+        return 0
+
+    return ocultos
 
 
 def conversar_en_streaming(cliente, mensajes, temperatura=None, max_tokens=None):

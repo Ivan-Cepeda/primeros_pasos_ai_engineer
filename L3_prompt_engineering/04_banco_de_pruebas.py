@@ -141,12 +141,16 @@ def evaluar_estrategia(cliente, estrategia, repeticiones):
 
         for repeticion in range(repeticiones):
 
-            # Le damos mas espacio de respuesta al chain-of-thought porque
-            # necesita escribir el analisis antes de la categoria.
+            # OJO CON ESTE NUMERO. Con un modelo de razonamiento (Gemini 3.x,
+            # GPT-6, Opus 5) el max_tokens se reparte entre lo que el modelo
+            # piensa por dentro y lo que finalmente escribe. Si le pones 15,
+            # se lo gasta pensando y te devuelve texto VACIO: el banco de
+            # pruebas marca 0% de aciertos y parece que fallo la estrategia,
+            # cuando en realidad nunca llego a contestar.
             if estrategia == "chain-of-thought":
-                limite = 200
+                limite = 800
             else:
-                limite = 15
+                limite = 400
 
             momento_inicial = time.time()
 

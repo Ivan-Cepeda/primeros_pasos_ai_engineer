@@ -102,7 +102,7 @@ def main():
     # -----------------------------------------------------------------------
     for direccion in DIRECCIONES_A_ORDENAR:
         mensajes = armar_mensajes(direccion, usar_ejemplos=False)
-        respuesta = conversar(cliente, mensajes, temperatura=0, max_tokens=60)
+        respuesta = conversar(cliente, mensajes, temperatura=0, max_tokens=1000)
 
         print("  " + direccion)
         print("    -> " + obtener_texto(respuesta))
@@ -113,7 +113,7 @@ def main():
     # -----------------------------------------------------------------------
     for direccion in DIRECCIONES_A_ORDENAR:
         mensajes = armar_mensajes(direccion, usar_ejemplos=True)
-        respuesta = conversar(cliente, mensajes, temperatura=0, max_tokens=60)
+        respuesta = conversar(cliente, mensajes, temperatura=0, max_tokens=1000)
 
         print("  " + direccion)
         print("    -> " + obtener_texto(respuesta))
@@ -131,8 +131,8 @@ def main():
 
     direccion = DIRECCIONES_A_ORDENAR[0]
 
-    sin_ejemplos = conversar(cliente, armar_mensajes(direccion, False), temperatura=0, max_tokens=60)
-    con_ejemplos = conversar(cliente, armar_mensajes(direccion, True), temperatura=0, max_tokens=60)
+    sin_ejemplos = conversar(cliente, armar_mensajes(direccion, False), temperatura=0, max_tokens=1000)
+    con_ejemplos = conversar(cliente, armar_mensajes(direccion, True), temperatura=0, max_tokens=1000)
 
     print("  tokens de entrada SIN ejemplos: " + str(sin_ejemplos.usage.prompt_tokens))
     print("  tokens de entrada CON ejemplos: " + str(con_ejemplos.usage.prompt_tokens))
@@ -157,7 +157,7 @@ def main():
         {"role": "user", "content": "Excelente producto, lo recomiendo muchisimo."},
     ]
 
-    respuesta = conversar(cliente, mensajes_mal_armados, temperatura=0, max_tokens=10)
+    respuesta = conversar(cliente, mensajes_mal_armados, temperatura=0, max_tokens=1000)
 
     print("  Le preguntamos por una resena claramente positiva.")
     print("  Contesto: " + obtener_texto(respuesta))

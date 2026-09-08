@@ -62,7 +62,7 @@ def main():
 
         # range(3) genera los numeros 0, 1, 2. O sea, repetimos 3 veces.
         for numero_de_intento in range(3):
-            nombre = preguntar(cliente, PEDIDO_CREATIVO, temperatura=temperatura, max_tokens=20)
+            nombre = preguntar(cliente, PEDIDO_CREATIVO, temperatura=temperatura, max_tokens=1000)
             print("  intento " + str(numero_de_intento + 1) + ": " + nombre)
 
     print()
@@ -74,7 +74,7 @@ def main():
     # -----------------------------------------------------------------------
     # Es tambien el limite del costo: nunca vas a pagar mas salida que esta.
 
-    for limite in [25, 200]:
+    for limite in [250, 900]:
         subtitulo("max_tokens = " + str(limite))
 
         respuesta = conversar(
@@ -90,8 +90,12 @@ def main():
         print("[motivo del final] " + respuesta.choices[0].finish_reason)
 
     print()
-    print("OJO: con 25 tokens la respuesta se CORTA a la mitad, no se resume.")
+    print("OJO: con el limite chico la respuesta se CORTA a la mitad de una frase.")
+    print("No se resume: se trunca. Mira el [motivo del final]: dice 'length'.")
     print("Si queres respuestas cortas, hay que pedirlo en el texto del prompt.")
+    print()
+    print("Y si en la linea de tokens aparece 'razonamiento oculto', tu modelo")
+    print("piensa antes de contestar: ese pensamiento tambien se come el limite.")
 
     # -----------------------------------------------------------------------
     titulo("UN CASO REAL: clasificar reclamos")
@@ -101,12 +105,12 @@ def main():
 
     subtitulo("temperature = 0  (asi se hace)")
     for numero_de_intento in range(3):
-        categoria = preguntar(cliente, PEDIDO_CLASIFICACION, temperatura=0, max_tokens=10)
+        categoria = preguntar(cliente, PEDIDO_CLASIFICACION, temperatura=0, max_tokens=1000)
         print("  intento " + str(numero_de_intento + 1) + ": " + categoria)
 
     subtitulo("temperature = 1.5  (asi NO se hace)")
     for numero_de_intento in range(3):
-        categoria = preguntar(cliente, PEDIDO_CLASIFICACION, temperatura=1.5, max_tokens=10)
+        categoria = preguntar(cliente, PEDIDO_CLASIFICACION, temperatura=1.5, max_tokens=1000)
         print("  intento " + str(numero_de_intento + 1) + ": " + categoria)
 
     # -----------------------------------------------------------------------

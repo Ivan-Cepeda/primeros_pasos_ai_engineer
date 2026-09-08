@@ -56,7 +56,7 @@ def probar_proveedor(nombre_del_proveedor):
             cliente,
             [{"role": "user", "content": TAREA}],
             temperatura=0.4,
-            max_tokens=250,
+            max_tokens=700,
         )
     except Exception as error:
         print("  [error] " + nombre_del_proveedor + ": " + type(error).__name__)
