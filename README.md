@@ -126,6 +126,7 @@ M1/
 │   ├── 03_chain_of_thought.py
 │   ├── 04_banco_de_pruebas.py
 │   ├── 05_tokens_y_costos.py
+│   ├── 06_modelos_de_razonamiento.py
 │   └── DESAFIOS.md
 │
 ├── .env.example
@@ -168,6 +169,17 @@ prioridad: *flag de línea de comandos* → *variable de entorno* → *valor por
 
 Donde hay una diferencia, el código la detecta y elige una alternativa; está
 comentado en cada archivo.
+
+### Modelos de razonamiento
+
+Los modelos actuales de ambos proveedores piensan antes de contestar, y ese
+pensamiento consume tokens que se pagan y no se ven. Consecuencia práctica:
+**`max_tokens` limita el pensamiento más la respuesta**, así que un límite
+chico devuelve texto vacío.
+
+Los ejercicios ya vienen calibrados para esto, `mostrar_uso` muestra los tokens
+ocultos, y [`L3/06`](L3_prompt_engineering/06_modelos_de_razonamiento.py) está
+dedicado enteramente al tema.
 
 ---
 

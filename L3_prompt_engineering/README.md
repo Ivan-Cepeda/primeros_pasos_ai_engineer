@@ -12,6 +12,7 @@ un prompt" es una opinión.
 | 03 | [`03_chain_of_thought.py`](03_chain_of_thought.py) | Chain-of-thought: razonar paso a paso, y cómo hacerlo sin ensuciar la salida |
 | 04 | [`04_banco_de_pruebas.py`](04_banco_de_pruebas.py) | Medir las tres estrategias sobre casos con respuesta conocida |
 | 05 | [`05_tokens_y_costos.py`](05_tokens_y_costos.py) | Dónde encontrar el conteo de tokens y cómo estimar el costo real |
+| 06 | [`06_modelos_de_razonamiento.py`](06_modelos_de_razonamiento.py) | **Qué cambió en 2026**: los tokens que pagás y no ves, la perilla de esfuerzo, y por qué "pensemos paso a paso" envejeció |
 
 ```bash
 python 04_banco_de_pruebas.py --provider gemini --repeticiones 3
@@ -58,6 +59,16 @@ verboso impacta el costo mucho más que agregar contexto (ejercicio 05).
 
 **El costo de un chat crece de forma cuadrática.** Reenviás todo el historial en
 cada turno. Recortalo, resumilo o cacheálo (ejercicio 05).
+
+## Una advertencia importante sobre los modelos de 2026
+
+Si estás usando un modelo de razonamiento (Gemini 3.x, GPT-6, Claude Opus 5),
+`max_tokens` **no limita sólo lo que el modelo escribe**: limita el pensamiento
+interno más la escritura, todo junto. Si le ponés un límite chico, el modelo lo
+gasta pensando y te devuelve una respuesta vacía.
+
+Los ejercicios ya vienen con márgenes amplios y avisan cuando esto pasa. El
+ejercicio 06 lo mide en detalle.
 
 ## Después de esto
 
