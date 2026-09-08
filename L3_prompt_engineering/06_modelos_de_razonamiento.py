@@ -262,6 +262,117 @@ def main():
     print("  veces empeora el resultado.")
 
     # =======================================================================
+    titulo("5) MENOS INSTRUCCIONES, MEJOR RESULTADO")
+    # =======================================================================
+    # En julio de 2026 el equipo de Claude Code conto que le borro mas del 80%
+    # de las instrucciones a su producto, y que el modelo no empeoro: en varias
+    # pruebas mejoro. La explicacion de ellos es que la mayoria de esas
+    # instrucciones existian para tapar debilidades que los modelos nuevos ya
+    # no tienen, y que encima lo estorbaban.
+    #
+    # Aca probamos lo mismo con un prompt nuestro: el mismo pedido escrito en
+    # tres versiones, de la mas cargada a la mas pelada.
+
+    print("  Clasificamos los mismos tickets con tres versiones del prompt:")
+    print("  una muy instruida, una intermedia y una casi pelada.")
+
+    # Version 1: cargada de instrucciones, como se escribia en 2023.
+    PROMPT_CARGADO = """Eres un asistente experto en atencion al cliente con 15 anos
+de experiencia en empresas de software. Tu unica tarea es clasificar tickets.
+
+Vas a clasificar el ticket en una de estas tres categorias: FACTURACION, TECNICO o CUENTA.
+
+Sigue estos pasos con cuidado:
+1. Lee el ticket completo antes de decidir.
+2. Identifica cual es el problema principal, no los temas secundarios.
+3. Verifica tu respuesta antes de darla.
+4. Piensa paso a paso.
+
+Reglas estrictas:
+- NO expliques tu razonamiento.
+- NO agregues texto adicional.
+- NO uses minusculas.
+- NO inventes categorias nuevas.
+- NO dudes: elige siempre una.
+
+Responde unicamente con la categoria en mayusculas.
+
+Ticket: """
+
+    # Version 2: lo necesario y nada mas.
+    PROMPT_INTERMEDIO = """Clasifica el ticket en FACTURACION, TECNICO o CUENTA,
+segun cual sea el problema que el cliente necesita resolver.
+Responde solo con la categoria.
+
+Ticket: """
+
+    # Version 3: casi nada.
+    PROMPT_PELADO = "Clasifica en FACTURACION, TECNICO o CUENTA:\n\n"
+
+    # Tickets con su respuesta correcta. El tercero es el dificil: habla de un
+    # cobro pero el problema real es tecnico.
+    TICKETS = [
+        ["Necesito la factura de octubre para contaduria.", "FACTURACION"],
+        ["Quiero cambiar el mail asociado a mi usuario.", "CUENTA"],
+        ["Me cobraron el plan y la app me sigue mostrando la version gratis.", "TECNICO"],
+    ]
+
+    versiones = [
+        ["cargado", PROMPT_CARGADO],
+        ["intermedio", PROMPT_INTERMEDIO],
+        ["pelado", PROMPT_PELADO],
+    ]
+
+    print()
+    print("  version      palabras   aciertos   tokens de entrada")
+    print("  " + "-" * 55)
+
+    for version in versiones:
+        nombre_version = version[0]
+        texto_del_prompt = version[1]
+
+        aciertos = 0
+        entrada_total = 0
+
+        for ticket in TICKETS:
+            respuesta = conversar(
+                cliente,
+                [{"role": "user", "content": texto_del_prompt + ticket[0]}],
+                temperatura=0,
+                max_tokens=1000,
+            )
+
+            entrada_total = entrada_total + respuesta.usage.prompt_tokens
+
+            if ticket[1] in obtener_texto(respuesta).upper():
+                aciertos = aciertos + 1
+
+        linea = "  "
+        linea = linea + nombre_version.ljust(13)
+        linea = linea + str(len(texto_del_prompt.split())).rjust(8)
+        linea = linea + (str(aciertos) + " de " + str(len(TICKETS))).rjust(11)
+        linea = linea + str(entrada_total).rjust(18)
+        print(linea)
+
+    print()
+    print("  Si el prompt pelado acierta lo mismo que el cargado, todas esas")
+    print("  instrucciones extra son tokens que pagas por nada.")
+    print()
+    print("  Y fijate en las reglas del prompt cargado: 'piensa paso a paso' y")
+    print("  'verifica tu respuesta' hoy son contraproducentes, y las reglas")
+    print("  escritas en negativo ('NO hagas esto') funcionan peor que decir")
+    print("  directamente lo que si queres.")
+    print()
+    print("  EL METODO QUE USA EL EQUIPO DE CLAUDE CODE:")
+    print("    1. Borra el prompt entero.")
+    print("    2. Corre tus casos de prueba (ejercicio 04).")
+    print("    3. Agrega de vuelta UNA instruccion por vez.")
+    print("    4. Quedate solo con las que mejoran una medicion.")
+    print()
+    print("  Y repetilo cada vez que cambies de modelo: las instrucciones que")
+    print("  hacian falta con el modelo viejo pueden estorbar con el nuevo.")
+
+    # =======================================================================
     titulo("QUE CAMBIO Y QUE NO, EN 2026")
     # =======================================================================
     print("""

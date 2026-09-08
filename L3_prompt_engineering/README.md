@@ -72,9 +72,10 @@ ejercicio 06 lo mide en detalle.
 
 ## Después de esto
 
-Seguí con [`DESAFIOS.md`](DESAFIOS.md). Son cinco consignas, y la número 4
+Seguí con [`DESAFIOS.md`](DESAFIOS.md). Son seis consignas. La número 4
 —ampliar el banco de pruebas— es la que más se parece al trabajo real de un
-AI Engineer.
+AI Engineer, y la número 6 —borrar tu prompt y reconstruirlo midiendo— es el
+método que usa el equipo de Claude Code en cada cambio de modelo.
 
 La lección **L4 — Seguridad y ética de la IA** se publica más adelante en este
 mismo repositorio.

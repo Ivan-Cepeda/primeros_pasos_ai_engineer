@@ -103,3 +103,39 @@ Requisitos:
 
 **Pregunta final:** ¿cuál es el costo por usuario activo por mes? ¿Es viable
 dentro del precio de tu producto?
+
+---
+
+## Desafío 6 — Ablación: borrá tu prompt y reconstruilo
+**Dificultad: media-alta** · *Se apoya en los ejercicios 04 y 06*
+
+En julio de 2026 el equipo de Claude Code contó que le borró **más del 80%** del
+prompt de sistema a su producto y que el modelo no empeoró. Boris Cherny, su
+creador, lo dijo en el escenario de Startup School un día después de que saliera
+Opus 5: *"podés probar borrando el resto también"*.
+
+La explicación: la mayoría de esas instrucciones existían para tapar debilidades
+que los modelos nuevos ya no tienen. Y encima lo estorbaban.
+
+Aplicá su método a un prompt tuyo.
+
+1. Agarrá el prompt más largo que tengas (el de `01_zero_shot.py` sirve, o uno
+   tuyo de otro proyecto).
+2. Armá tu set de casos de prueba con la respuesta correcta — al menos 15,
+   incluyendo los ambiguos. Sin esto no podés medir nada y el desafío no tiene
+   sentido.
+3. Medí el prompt completo: exactitud y tokens de entrada.
+4. **Borralo entero.** Dejá solo la frase mínima que describe la tarea. Medí.
+5. Agregá de vuelta **una instrucción por vez**. Medí después de cada una.
+6. Quedate únicamente con las instrucciones que mejoraron un número.
+
+Entregá una tabla: instrucción · exactitud antes · exactitud después · tokens
+que cuesta · veredicto (se queda / se va).
+
+**La parte incómoda:** vas a descubrir que varias instrucciones que escribiste
+con convicción no mueven la aguja, y que alguna la empeora. Anotá cuáles y por
+qué creés que pasó.
+
+**Extensión:** repetí la medición con un modelo distinto. Las instrucciones que
+sobreviven no son las mismas para todos los modelos — por eso la ablación se
+rehace en cada cambio de modelo, no una vez y listo.
