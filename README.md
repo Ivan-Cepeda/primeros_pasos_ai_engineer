@@ -1,7 +1,8 @@
 # M1 — Ejercicios prácticos: integración de LLMs
 
-Ejercicios acompañantes de la lección **L2 — Bases técnicas para la
-integración de un LLM**.
+Ejercicios acompañantes de las lecciones **L2 — Bases técnicas para la
+integración de un LLM** y **L3 — El arte y la ciencia de la ingeniería de
+prompts**.
 Todo el código corre indistintamente con **OpenAI** o con **Google Gemini**,
 sin cambiar una sola línea: sólo se cambia una variable de entorno.
 
@@ -119,13 +120,21 @@ M1/
 │   ├── 06_comparar_proveedores.py
 │   └── DESAFIOS.md
 │
+├── L3_prompt_engineering/      El arte y la ciencia del prompting
+│   ├── 01_zero_shot.py
+│   ├── 02_few_shot.py
+│   ├── 03_chain_of_thought.py
+│   ├── 04_banco_de_pruebas.py
+│   ├── 05_tokens_y_costos.py
+│   └── DESAFIOS.md
+│
 ├── .env.example
 ├── .gitignore
 └── requirements.txt
 ```
 
-La carpeta de la lección tiene su propio `README.md` con el detalle de cada
-ejercicio, y un `DESAFIOS.md` con cinco consignas para resolver.
+Cada carpeta de lección tiene su propio `README.md` con el detalle de sus
+ejercicios, y un `DESAFIOS.md` con cinco consignas para resolver.
 
 ---
 
@@ -155,7 +164,7 @@ prioridad: *flag de línea de comandos* → *variable de entorno* → *valor por
 | Tool / function calling           | ✅     | ✅                           |
 | `response_format: json_object`    | ✅     | ✅                           |
 | Endpoint `/moderations`           | ✅     | ❌ *(sólo OpenAI)*            |
-| Conteo local con `tiktoken`       | ✅     | ❌ *(tokenizador propio)*     |
+| Conteo local con `tiktoken`       | ✅     | ❌ *(L3 lo detecta y estima)* |
 
 Donde hay una diferencia, el código la detecta y elige una alternativa; está
 comentado en cada archivo.
@@ -164,11 +173,14 @@ comentado en cada archivo.
 
 ## Orden sugerido
 
-Empezá por [`L2_integracion_llm/README.md`](L2_integracion_llm/README.md) y hacé
-los ejercicios en orden numérico: cada uno asume el anterior.
+1. **L2** — cómo se le habla a un modelo y cómo se lo integra sin romper nada.
+2. **L3** — cómo se le pide bien y cómo se mide si el prompt mejoró.
 
-Las lecciones siguientes (L3 — ingeniería de prompts, y L4 — seguridad y ética)
-se publican más adelante en este mismo repositorio.
+Dentro de cada carpeta, hacé los ejercicios en orden numérico: cada uno asume
+el anterior. L3 da por vistas las bases de L2.
+
+La lección L4 (seguridad y ética de la IA) se publica más adelante en este
+mismo repositorio.
 
 ---
 
