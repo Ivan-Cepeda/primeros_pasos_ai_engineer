@@ -37,17 +37,39 @@ from common.ui import mostrar_configuracion, subtitulo, titulo
 # ---------------------------------------------------------------------------
 # Precios de referencia, en dolares por MILLON de tokens.
 #
-# IMPORTANTE: estos precios cambian seguido y los modelos se dan de baja.
-# Antes de usarlos para presupuestar algo de verdad, revisalos en la pagina del
-# proveedor. Si tu modelo no esta en esta lista, el programa te lo avisa y podes
-# agregarlo vos. La tabla sirve igual para ver la RELACION entre el precio de
-# entrada y el de salida, que es lo que enseña este ejercicio.
+# Verificados en la pagina oficial de cada proveedor en septiembre de 2026.
+#
+# DOS AVISOS, Y LOS DOS SON PARTE DE LA LECCION:
+#
+# 1. Los precios CAMBIAN y los modelos SE DAN DE BAJA. En una version anterior
+#    de este archivo figuraba gemini-2.0-flash: hoy la API devuelve error 404
+#    porque ese modelo ya no existe. Nunca presupuestes con una tabla que
+#    copiaste hace seis meses.
+#
+# 2. Los modelos Gemini 3.6, 3.7 y 3.8 estan con precio PROMOCIONAL de
+#    lanzamiento hasta el 31 de diciembre de 2026. El 1 de enero de 2027 pasan
+#    de 0.75 a 1.50 la entrada, y de 3.75 a 7.50 la salida: el DOBLE. Si armas
+#    un presupuesto anual con el precio de hoy, en enero te llevas una sorpresa.
+#
+# Si tu modelo no esta en esta lista, el programa te lo avisa y podes agregarlo
+# vos. La tabla sirve igual para ver la RELACION entre el precio de entrada y
+# el de salida, que es lo que enseña este ejercicio.
 # ---------------------------------------------------------------------------
 PRECIOS = {
-    "gpt-4o-mini":      {"entrada": 0.15, "salida": 0.60},
-    "gpt-4o":           {"entrada": 2.50, "salida": 10.00},
-    "gemini-2.0-flash": {"entrada": 0.10, "salida": 0.40},
-    "gemini-2.5-flash": {"entrada": 0.30, "salida": 2.50},
+    # --- OpenAI ---
+    "gpt-4o-mini":           {"entrada":  0.15, "salida":  0.60},
+    "gpt-5.6-luna":          {"entrada":  0.20, "salida":  1.20},
+    "gpt-6-astra":           {"entrada": 10.00, "salida": 50.00},
+
+    # --- Google Gemini ---
+    "gemini-2.5-flash":      {"entrada":  0.30, "salida":  2.50},
+    "gemini-2.5-pro":        {"entrada":  1.25, "salida": 10.00},
+    "gemini-3.1-flash-lite": {"entrada":  0.25, "salida":  1.50},
+    "gemini-3.5-flash-lite": {"entrada":  0.30, "salida":  2.50},
+    "gemini-3.5-flash":      {"entrada":  1.50, "salida":  9.00},
+    "gemini-3.6-flash":      {"entrada":  0.75, "salida":  3.75},
+    "gemini-3.7-flash":      {"entrada":  0.75, "salida":  3.75},
+    "gemini-3.8-flash":      {"entrada":  0.75, "salida":  3.75},
 }
 
 
@@ -103,16 +125,35 @@ def estimar_tokens(texto):
     return cantidad
 
 
-def calcular_costo(modelo, tokens_entrada, tokens_salida):
-    """Calcula cuanto salio una llamada. Devuelve None si no conocemos el precio."""
+def calcular_costo(modelo, tokens_entrada, tokens_salida, tokens_de_razonamiento=0):
+    """
+    Calcula cuanto salio una llamada. Devuelve None si no conocemos el precio.
 
+    EL ERROR QUE CASI TODOS COMETEN
+    -------------------------------
+    Es tentador calcular el costo con dos numeros: entrada y salida. Pero si
+    usas un modelo de razonamiento te queda MUY corto, porque los tokens que
+    el modelo gasta pensando tambien se facturan, y se facturan al precio de
+    SALIDA, que es el caro.
+
+    Ejemplo real medido con gemini-3.7-flash:
+        entrada 20 | salida visible 61 | razonamiento 293
+    Si contas solo los 61 visibles, el costo te da 5 veces menos de lo que
+    realmente vas a pagar.
+
+    Por eso esta funcion suma el razonamiento a la salida antes de multiplicar.
+    """
     if modelo not in PRECIOS:
         return None
 
     precio = PRECIOS[modelo]
 
+    # Lo que se factura como salida es todo lo que el modelo genero: lo que
+    # escribio en pantalla MAS lo que penso por dentro.
+    salida_facturada = tokens_salida + tokens_de_razonamiento
+
     costo_entrada = tokens_entrada / 1000000 * precio["entrada"]
-    costo_salida = tokens_salida / 1000000 * precio["salida"]
+    costo_salida = salida_facturada / 1000000 * precio["salida"]
 
     return costo_entrada + costo_salida
 
@@ -184,11 +225,18 @@ def main():
     tokens_entrada = respuesta.usage.prompt_tokens
     tokens_salida = respuesta.usage.completion_tokens
 
+    # Los tokens de razonamiento no vienen en un campo propio: se deducen.
+    razonamiento = respuesta.usage.total_tokens - tokens_entrada - tokens_salida
+
+    if razonamiento < 0:
+        razonamiento = 0
+
     print("  Tokens de entrada (lo que mandaste):    " + str(tokens_entrada))
     print("  Tokens de salida (lo que el escribio):  " + str(tokens_salida))
+    print("  Tokens de razonamiento (no los viste):  " + str(razonamiento))
     print("  Total:                                  " + str(respuesta.usage.total_tokens))
 
-    costo = calcular_costo(modelo, tokens_entrada, tokens_salida)
+    costo = calcular_costo(modelo, tokens_entrada, tokens_salida, razonamiento)
 
     if costo is None:
         print()
@@ -198,6 +246,19 @@ def main():
         print()
         print("  Costo de esta llamada: " + str(round(costo, 6)) + " dolares")
         print("  Si la hicieras 100.000 veces: " + str(round(costo * 100000, 2)) + " dolares")
+
+        # Mostramos tambien cuanto habrias calculado MAL si te olvidaras del
+        # razonamiento. Es la forma mas clara de que se entienda el punto.
+        if razonamiento > 0:
+            costo_mal = calcular_costo(modelo, tokens_entrada, tokens_salida)
+            cuantas_veces = round(costo / costo_mal, 1)
+
+            print()
+            print("  Si hubieras contado solo los tokens visibles habrias")
+            print("  calculado " + str(round(costo_mal, 6)) + " dolares: " +
+                  str(cuantas_veces) + " veces MENOS de lo que")
+            print("  realmente vas a pagar. Ese es el error de presupuesto mas")
+            print("  comun con los modelos de razonamiento.")
 
     # -----------------------------------------------------------------------
     titulo("3) LOS TOKENS DE SALIDA SON LOS CAROS")

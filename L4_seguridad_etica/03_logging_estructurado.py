@@ -46,11 +46,24 @@ ARCHIVO_DE_LOG = os.path.join(CARPETA_DE_LOGS, "llm.jsonl")
 # que reescribir todo.
 
 
+# Precios en dolares por millon de tokens, verificados en septiembre de 2026.
+# Ojo: los Gemini 3.6/3.7/3.8 tienen precio promocional hasta el 31/12/2026 y
+# despues se duplica. La explicacion completa esta en L3, ejercicio 05.
 PRECIOS = {
-    "gpt-4o-mini":      {"entrada": 0.15, "salida": 0.60},
-    "gpt-4o":           {"entrada": 2.50, "salida": 10.00},
-    "gemini-2.0-flash": {"entrada": 0.10, "salida": 0.40},
-    "gemini-2.5-flash": {"entrada": 0.30, "salida": 2.50},
+    # --- OpenAI ---
+    "gpt-4o-mini":           {"entrada":  0.15, "salida":  0.60},
+    "gpt-5.6-luna":          {"entrada":  0.20, "salida":  1.20},
+    "gpt-6-astra":           {"entrada": 10.00, "salida": 50.00},
+
+    # --- Google Gemini ---
+    "gemini-2.5-flash":      {"entrada":  0.30, "salida":  2.50},
+    "gemini-2.5-pro":        {"entrada":  1.25, "salida": 10.00},
+    "gemini-3.1-flash-lite": {"entrada":  0.25, "salida":  1.50},
+    "gemini-3.5-flash-lite": {"entrada":  0.30, "salida":  2.50},
+    "gemini-3.5-flash":      {"entrada":  1.50, "salida":  9.00},
+    "gemini-3.6-flash":      {"entrada":  0.75, "salida":  3.75},
+    "gemini-3.7-flash":      {"entrada":  0.75, "salida":  3.75},
+    "gemini-3.8-flash":      {"entrada":  0.75, "salida":  3.75},
 }
 
 
@@ -122,17 +135,24 @@ def guardar_evento(datos):
     archivo.close()
 
 
-def calcular_costo(modelo, tokens_entrada, tokens_salida):
-    """Calcula el costo de una llamada, o None si no conocemos el precio."""
+def calcular_costo(modelo, tokens_entrada, tokens_salida, tokens_de_razonamiento=0):
+    """
+    Calcula el costo de una llamada, o None si no conocemos el precio.
 
+    OJO: los tokens que el modelo gasta pensando por dentro tambien se
+    facturan, y al precio de SALIDA, que es el caro. Si no los sumas, tu
+    tablero de costos te va a mentir por varias veces. Ver L3, ejercicio 05.
+    """
     if modelo not in PRECIOS:
         return None
 
     precio = PRECIOS[modelo]
 
+    salida_facturada = tokens_salida + tokens_de_razonamiento
+
     return round(
         tokens_entrada / 1000000 * precio["entrada"] +
-        tokens_salida / 1000000 * precio["salida"],
+        salida_facturada / 1000000 * precio["salida"],
         6,
     )
 
@@ -190,12 +210,24 @@ def llamar_y_registrar(cliente, prompt, usuario, funcionalidad, id_de_operacion)
     evento_de_respuesta = {"evento": "respuesta"}
     evento_de_respuesta.update(datos_comunes)
     evento_de_respuesta["milisegundos"] = milisegundos
+    # Los tokens de razonamiento no vienen en un campo propio: se deducen
+    # restando. Los guardamos aparte porque son informacion valiosa: si un dia
+    # se disparan, tu factura sube sin que hayas cambiado nada del codigo.
+    razonamiento = (respuesta.usage.total_tokens
+                    - respuesta.usage.prompt_tokens
+                    - respuesta.usage.completion_tokens)
+
+    if razonamiento < 0:
+        razonamiento = 0
+
     evento_de_respuesta["tokens_entrada"] = respuesta.usage.prompt_tokens
     evento_de_respuesta["tokens_salida"] = respuesta.usage.completion_tokens
+    evento_de_respuesta["tokens_razonamiento"] = razonamiento
     evento_de_respuesta["costo_usd"] = calcular_costo(
         cliente["modelo"],
         respuesta.usage.prompt_tokens,
         respuesta.usage.completion_tokens,
+        razonamiento,
     )
     evento_de_respuesta["motivo_del_final"] = respuesta.choices[0].finish_reason
     evento_de_respuesta["respuesta"] = acortar(tapar_datos_sensibles(texto))
@@ -242,7 +274,8 @@ def mostrar_resumen():
 
     for evento in respuestas:
         tiempos.append(evento["milisegundos"])
-        tokens_totales = tokens_totales + evento["tokens_entrada"] + evento["tokens_salida"]
+        tokens_totales = (tokens_totales + evento["tokens_entrada"] +
+                          evento["tokens_salida"] + evento.get("tokens_razonamiento", 0))
 
         if evento["costo_usd"] is not None:
             costo_total = costo_total + evento["costo_usd"]
@@ -279,7 +312,7 @@ def mostrar_resumen():
     print()
     print("  Costo por funcionalidad:")
     for nombre in costo_por_funcionalidad:
-        print("    " + nombre.ljust(22) + str(round(costo_por_funcionalidad[nombre], 6)) + " dolares")
+        print("    " + nombre.ljust(26) + str(round(costo_por_funcionalidad[nombre], 6)) + " dolares")
 
 
 def main():
@@ -353,7 +386,8 @@ def main():
   [ ] Un identificador para unir las llamadas de una misma operacion
   [ ] El usuario, para poder investigar una queja concreta
   [ ] El proveedor y el modelo: sin esto no podes comparar nada
-  [ ] Los tokens y el costo calculado
+  [ ] Los tokens de entrada, de salida Y de razonamiento
+  [ ] El costo calculado sumando el razonamiento (si no, te miente)
   [ ] El tiempo que tardo, en milisegundos
   [ ] Los datos personales tapados ANTES de escribir
   [ ] Los textos largos recortados
