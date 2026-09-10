@@ -137,6 +137,14 @@ M1/
 │   ├── 05_pipeline_seguro.py
 │   └── DESAFIOS.md
 │
+├── PI/                         Proyecto Integrador del módulo
+│   ├── src/                    Aplicación: contrato JSON, métricas, seguridad
+│   ├── prompts/                La plantilla del prompt, versionada aparte
+│   ├── metrics/                Registro de cada ejecución (CSV y JSON)
+│   ├── reports/                Informe del proyecto
+│   ├── tests/                  21 tests, sin llamadas a la API
+│   └── README.md
+│
 ├── .env.example
 ├── .gitignore
 └── requirements.txt
@@ -199,6 +207,11 @@ dedicado enteramente al tema.
 
 Dentro de cada carpeta, hacé los ejercicios en orden numérico: cada uno asume
 el anterior. L4 da por vistas las bases de L2 y L3.
+
+Después de las tres lecciones está [`PI/`](PI/README.md), el **Proyecto
+Integrador**: una aplicación que junta todo —salida estructurada, métricas de
+costo y latencia, una técnica de prompting documentada, tests y una capa de
+seguridad— con su propio README e informe.
 
 ---
 

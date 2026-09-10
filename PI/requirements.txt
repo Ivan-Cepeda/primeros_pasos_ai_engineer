@@ -1,0 +1,10 @@
+# Cliente de la API. Sirve para OpenAI y tambien para Gemini, porque Google
+# publica un endpoint compatible con el mismo protocolo.
+openai>=1.60.0
+
+# Carga las variables de entorno desde el archivo .env
+python-dotenv>=1.0.1
+
+# Solo para correr los tests con "python -m pytest".
+# Los tests tambien corren sin el: python tests/test_core.py
+pytest>=8.0.0
