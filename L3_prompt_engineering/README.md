@@ -77,5 +77,5 @@ Seguí con [`DESAFIOS.md`](DESAFIOS.md). Son seis consignas. La número 4
 AI Engineer, y la número 6 —borrar tu prompt y reconstruirlo midiendo— es el
 método que usa el equipo de Claude Code en cada cambio de modelo.
 
-La lección **L4 — Seguridad y ética de la IA** se publica más adelante en este
-mismo repositorio.
+Después seguí con **L4 — Seguridad y ética de la IA**, que es donde todo esto
+se convierte en un sistema que se puede poner en producción.

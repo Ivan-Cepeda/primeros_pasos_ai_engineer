@@ -1,8 +1,8 @@
 # M1 — Ejercicios prácticos: integración de LLMs
 
 Ejercicios acompañantes de las lecciones **L2 — Bases técnicas para la
-integración de un LLM** y **L3 — El arte y la ciencia de la ingeniería de
-prompts**.
+integración de un LLM**, **L3 — El arte y la ciencia de la ingeniería de
+prompts** y **L4 — Seguridad y ética de la IA**.
 Todo el código corre indistintamente con **OpenAI** o con **Google Gemini**,
 sin cambiar una sola línea: sólo se cambia una variable de entorno.
 
@@ -129,6 +129,14 @@ M1/
 │   ├── 06_modelos_de_razonamiento.py
 │   └── DESAFIOS.md
 │
+├── L4_seguridad_etica/         Seguridad, ética y producción
+│   ├── 01_modos_de_fallo.py
+│   ├── 02_middleware_moderacion.py
+│   ├── 03_logging_estructurado.py
+│   ├── 04_prompt_injection.py
+│   ├── 05_pipeline_seguro.py
+│   └── DESAFIOS.md
+│
 ├── .env.example
 ├── .gitignore
 └── requirements.txt
@@ -164,7 +172,7 @@ prioridad: *flag de línea de comandos* → *variable de entorno* → *valor por
 | Streaming                         | ✅     | ✅                           |
 | Tool / function calling           | ✅     | ✅                           |
 | `response_format: json_object`    | ✅     | ✅                           |
-| Endpoint `/moderations`           | ✅     | ❌ *(sólo OpenAI)*            |
+| Endpoint `/moderations`           | ✅     | ❌ *(L4 usa un moderador por LLM)* |
 | Conteo local con `tiktoken`       | ✅     | ❌ *(L3 lo detecta y estima)* |
 
 Donde hay una diferencia, el código la detecta y elige una alternativa; está
@@ -187,12 +195,10 @@ dedicado enteramente al tema.
 
 1. **L2** — cómo se le habla a un modelo y cómo se lo integra sin romper nada.
 2. **L3** — cómo se le pide bien y cómo se mide si el prompt mejoró.
+3. **L4** — qué puede salir mal y cómo se lleva todo eso a producción.
 
 Dentro de cada carpeta, hacé los ejercicios en orden numérico: cada uno asume
-el anterior. L3 da por vistas las bases de L2.
-
-La lección L4 (seguridad y ética de la IA) se publica más adelante en este
-mismo repositorio.
+el anterior. L4 da por vistas las bases de L2 y L3.
 
 ---
 
